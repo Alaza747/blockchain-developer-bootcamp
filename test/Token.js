@@ -4,7 +4,7 @@ const { ethers } = require("hardhat");
 
 describe('Token Contract', () => {
     // Tests go inside here...
-    it('has a name', async () => {
+    it('has correct name', async () => {
         // Fetch Token from Blockchain
         const Token = await ethers.getContractFactory("Token")
         let token = await Token.deploy()
@@ -13,6 +13,6 @@ describe('Token Contract', () => {
         const name = await token.name()
         
         // Check that the name is correct
-        expect(name).to.equal("My Token")
+        expect(name).to.equal("TonyCoin")
     })
 })
