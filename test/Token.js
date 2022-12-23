@@ -12,23 +12,16 @@ describe('Token Contract', () => {
         // Fetch Token from Blockchain
         const Token = await ethers.getContractFactory("Token")
         token = await Token.deploy()
-
     })
     
     it('has correct name', async () => {
-        // Read token name
-        const name = await token.name()
-        
-        // Check that the name is correct
-        expect(name).to.equal("TonyCoin")
+        // Read token name and check that the name is correct
+        expect(await token.name()).to.equal("TonyCoin")
     })
 
     it('has correct symbol', async () => {    
-            // Read token symbol
-            const symbol = await token.symbol()
-            
-            // Check that the symbol is correct
-            expect(symbol).to.equal("TONY")
+        // Read token symbol and check that the symbol is correct
+        expect(await token.symbol()).to.equal("TONY")
         })
 
 
