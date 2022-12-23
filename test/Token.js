@@ -15,27 +15,34 @@ describe('Token Contract', () => {
         // Code goes in here...
         // Fetch Token from Blockchain
         const Token = await ethers.getContractFactory("Token")
-        token = await Token.deploy("TonyCoin")
+        token = await Token.deploy("TonyCoin", "TONY", 1000000)
     })
     
-    it('has correct name', async () => {
-        // Read token name and check that the name is correct
-        expect(await token.name()).to.equal("TonyCoin")
-    })
+    // "Block" of testing 
+    describe("Deployment", () => {
+        const name = "TonyCoin";
+        const symbol = "TONY";
+        const decimals = 18;
+        const totalSupply = tokens("1000000");
 
-    it('has correct symbol', async () => {    
-        // Read token symbol and check that the symbol is correct
-        expect(await token.symbol()).to.equal("TONY")
+        it('has correct name', async () => {
+            // Read token name and check that the name is correct
+            expect(await token.name()).to.equal(name)
         })
-
-    it('has 18 decimals', async () => {
-        // Read token decimals and check that the decimal number is correct
-        expect(await token.decimals()).to.equal(18)
+    
+        it('has correct symbol', async () => {    
+            // Read token symbol and check that the symbol is correct
+            expect(await token.symbol()).to.equal(symbol)
+            })
+    
+        it('has 18 decimals', async () => {
+            // Read token decimals and check that the decimal number is correct
+            expect(await token.decimals()).to.equal(decimals)
+        })
+    
+        it("has a total suply of 1.000.000", async () => {
+            // Read Total Supply and check that the total Supply is correct
+            expect(await token.totalSupply()).to.equal(totalSupply)
+        })
     })
-
-    it("has a total suply of 1.000.000", async () => {
-        // Read Total Supply and check that the total Supply is correct
-        expect(await token.totalSupply()).to.equal(tokens("1000000"))
-    })
-
 })
