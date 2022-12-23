@@ -15,7 +15,7 @@ describe('Token Contract', () => {
         // Code goes in here...
         // Fetch Token from Blockchain
         const Token = await ethers.getContractFactory("Token")
-        token = await Token.deploy()
+        token = await Token.deploy("TonyCoin")
     })
     
     it('has correct name', async () => {
@@ -35,8 +35,7 @@ describe('Token Contract', () => {
 
     it("has a total suply of 1.000.000", async () => {
         // Read Total Supply and check that the total Supply is correct
-        const value = tokens("1000000")
-        expect(await token.totalSupply()).to.equal(value)
+        expect(await token.totalSupply()).to.equal(tokens("1000000"))
     })
 
 })

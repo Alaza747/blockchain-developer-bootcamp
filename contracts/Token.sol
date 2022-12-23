@@ -8,11 +8,11 @@ contract Token {
      // Declaring public (visible to everyone on the blockchain) variables (belongs to the Contracts (e.g. not limitied to function's scope) Scope) variable
     string public name = "TonyCoin";
     string public symbol = "TONY";
-    
-    // Decimals
     uint256 public decimals = 18;
-
-    // TotalSupply
     uint256 public totalSupply = 1000000 * (10**decimals);
+
+    constructor(string memory _name) {
+        name = _name;
+    }
 }
  
