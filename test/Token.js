@@ -4,11 +4,18 @@ const { ethers } = require("hardhat");
 
 describe('Token Contract', () => {
     // Tests go inside here...
-    it('has correct name', async () => {
-    // Fetch Token from Blockchain
+    // Declare token variable here for it to be global and accessible in all functions
+    let token
+
+    beforeEach(async () => {
+        // Code goes in here...
+        // Fetch Token from Blockchain
         const Token = await ethers.getContractFactory("Token")
-        let token = await Token.deploy()
-        
+        token = await Token.deploy()
+
+    })
+    
+    it('has correct name', async () => {
         // Read token name
         const name = await token.name()
         
@@ -16,11 +23,7 @@ describe('Token Contract', () => {
         expect(name).to.equal("TonyCoin")
     })
 
-    it('has correct symbol', async () => {
-        // Fetch Token from Blockchain
-            const Token = await ethers.getContractFactory("Token")
-            let token = await Token.deploy()
-            
+    it('has correct symbol', async () => {    
             // Read token symbol
             const symbol = await token.symbol()
             
