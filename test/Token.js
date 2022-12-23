@@ -1,6 +1,10 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+const tokens = (n) => {
+    return ethers.utils.parseUnits(n.toString(), "ether")
+}
+
 
 describe('Token Contract', () => {
     // Tests go inside here...
@@ -24,5 +28,15 @@ describe('Token Contract', () => {
         expect(await token.symbol()).to.equal("TONY")
         })
 
+    it('has 18 decimals', async () => {
+        // Read token decimals and check that the decimal number is correct
+        expect(await token.decimals()).to.equal(18)
+    })
+
+    it("has a total suply of 1.000.000", async () => {
+        // Read Total Supply and check that the total Supply is correct
+        const value = tokens("1000000")
+        expect(await token.totalSupply()).to.equal(value)
+    })
 
 })

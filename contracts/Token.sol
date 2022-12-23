@@ -1,11 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol"; // Enables console.log functionality
+ // Enables console.log functionality
+import "hardhat/console.sol";
 
 contract Token {
-    string public name = "TonyCoin"; // Declaring a public (visible to everyone on the blockchain) variable (belongs to the Contracts (e.g. not limitied to function's scope) Scope) variable
+     // Declaring public (visible to everyone on the blockchain) variables (belongs to the Contracts (e.g. not limitied to function's scope) Scope) variable
+    string public name = "TonyCoin";
     string public symbol = "TONY";
     
+    // Decimals
+    uint256 public decimals = 18;
+
+    // TotalSupply
+    uint256 public totalSupply = 1000000 * (10**decimals);
 }
  
