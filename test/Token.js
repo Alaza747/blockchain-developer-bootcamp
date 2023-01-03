@@ -43,6 +43,6 @@ describe('Token Contract', () => {
         it("has a total suply of 1.000.000", async () => {
             // Read Total Supply and check that the total Supply is correct
             expect(await token.totalSupply()).to.equal(totalSupply)
-        })
+        })   
     })
 })
