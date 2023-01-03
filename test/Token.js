@@ -9,13 +9,20 @@ const tokens = (n) => {
 describe('Token Contract', () => {
     // Tests go inside here...
     // Declare token variable here for it to be global and accessible in all functions
-    let token
+    let token, 
+        accounts,
+        deployer
 
     beforeEach(async () => {
         // Code goes in here...
         // Fetch Token from Blockchain
         const Token = await ethers.getContractFactory("Token")
         token = await Token.deploy("TonyCoin", "TONY", 1000000)
+    
+
+        // Get all accounts from blockchain 
+        accounts = await ethers.getSigners();
+        deployer = accounts[0];
     })
     
     // "Block" of testing 
@@ -43,6 +50,11 @@ describe('Token Contract', () => {
         it("has a total suply of 1.000.000", async () => {
             // Read Total Supply and check that the total Supply is correct
             expect(await token.totalSupply()).to.equal(totalSupply)
-        })   
+        })
+        
+        it('assigns total Supply to Contract deployer', async () => {
+            expect(await token.balanceOf(deployer.address)).to.equal(totalSupply)
+        })
+
     })
 })
