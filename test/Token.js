@@ -34,22 +34,22 @@ describe('Token Contract', () => {
         const decimals = 18;
         const totalSupply = tokens("1000000");
 
-        it('has correct name', async () => {
+        it(' has correct name', async () => {
             // Read token name and check that the name is correct
             expect(await token.name()).to.equal(name)
         })
     
-        it('has correct symbol', async () => {    
+        it(' has correct symbol', async () => {    
             // Read token symbol and check that the symbol is correct
             expect(await token.symbol()).to.equal(symbol)
             })
     
-        it('has 18 decimals', async () => {
+        it(' has 18 decimals', async () => {
             // Read token decimals and check that the decimal number is correct
             expect(await token.decimals()).to.equal(decimals)
         })
     
-        it("has a total supply of 1.000.000", async () => {
+        it(" has a total supply of 1.000.000", async () => {
             // Read Total Supply and check that the total Supply is correct
             expect(await token.totalSupply()).to.equal(totalSupply)
         })
@@ -69,13 +69,26 @@ describe('Token Contract', () => {
             // Transfer tokens
             amount = tokens(100)
             transaction = await token.connect(deployer).transfer(receiver.address, amount)
-            result = transaction.wait()
+            result = await transaction.wait()
         })
 
         it(' transfers Tokens from one account to another', async () => {
             // Ensure that tokens were transferred
             expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))
             expect(await token.balanceOf(receiver.address)).to.equal(amount)
+        })
+
+        it(' emits a transfer event', async () => {
+            const event = result.events[0] 
+            expect(await event.event).to.equal('Transfer')
+
+            // Get the logs of the events
+            const args = event.args
+
+            // Confirm that the input is correct
+            expect(await args.from).to.equal(deployer.address)
+            expect(await args.to).to.equal(receiver.address)
+            expect(await args.value).to.equal(amount)
         })
     })
 })
