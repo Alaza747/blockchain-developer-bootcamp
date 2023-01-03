@@ -14,17 +14,27 @@ contract Token {
     uint256 public totalSupply;
 
     // Track balances
-    mapping(address => uint256) public balanceOf; 
-    // Send Tokens
+    mapping(address => uint256) public balanceOf;   
 
-
-
-
-    constructor(string memory _name, string memory _symbol, uint256 _totalSupply) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _totalSupply
+    ) {
         // "_variable" is a naming convention for local variables
         name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply * (10**decimals);
         balanceOf[msg.sender] = totalSupply;
+    }
+
+    function transfer(address _to, uint256 _value) 
+        public 
+        returns (bool success)
+    {
+        // Deduct Tokens from sender
+        balanceOf[msg.sender] -= _value;
+        // Credit Tokens to receiver
+        balanceOf[_to] += _value;
     }
 }

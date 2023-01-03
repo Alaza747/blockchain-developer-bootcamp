@@ -11,7 +11,8 @@ describe('Token Contract', () => {
     // Declare token variable here for it to be global and accessible in all functions
     let token, 
         accounts,
-        deployer
+        deployer,
+        receiver
 
     beforeEach(async () => {
         // Code goes in here...
@@ -23,6 +24,7 @@ describe('Token Contract', () => {
         // Get all accounts from blockchain 
         accounts = await ethers.getSigners();
         deployer = accounts[0];
+        receiver = accounts[1];
     })
     
     // "Block" of testing 
@@ -47,7 +49,7 @@ describe('Token Contract', () => {
             expect(await token.decimals()).to.equal(decimals)
         })
     
-        it("has a total suply of 1.000.000", async () => {
+        it("has a total supply of 1.000.000", async () => {
             // Read Total Supply and check that the total Supply is correct
             expect(await token.totalSupply()).to.equal(totalSupply)
         })
@@ -56,5 +58,24 @@ describe('Token Contract', () => {
             expect(await token.balanceOf(deployer.address)).to.equal(totalSupply)
         })
 
+    })
+
+    describe("Sending Tokens", () => {
+        let amount,
+            transaction,
+            result
+
+        beforeEach(async () => {
+            // Transfer tokens
+            amount = tokens(100)
+            transaction = await token.connect(deployer).transfer(receiver.address, amount)
+            result = transaction.wait()
+        })
+
+        it(' transfers Tokens from one account to another', async () => {
+            // Ensure that tokens were transferred
+            expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))
+            expect(await token.balanceOf(receiver.address)).to.equal(amount)
+        })
     })
 })
