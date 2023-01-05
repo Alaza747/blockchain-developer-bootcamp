@@ -50,18 +50,24 @@ contract Token {
         // Require that account has enough balance, if not a throw/error will be executed
         require(balanceOf[msg.sender] >= _value);
         
+        _transfer(msg.sender, _to, _value);
+
+        return true;
+    }
+
+    function _transfer(address _from, address _to, uint256 _value)
+        internal
+    {
         // Sending tokens to some invalid address should not be allowed
         require(_to != address(0));
 
         // Deduct Tokens from sender
-        balanceOf[msg.sender] -= _value;
+        balanceOf[_from] -= _value;
         // Credit Tokens to receiver
         balanceOf[_to] += _value;
 
         // Emit Transfer Event
-        emit Transfer(msg.sender, _to, _value);
-
-        return true;
+        emit Transfer(_from, _to, _value);
     }
 
     function approve(address _spender, uint256 _value) 
@@ -75,4 +81,15 @@ contract Token {
 
         return true;
     }
+
+    function transferFrom(address _from, address _to, uint256 _value)
+        public
+        returns (bool success)
+    {
+        //Check Approval 
+
+
+        //Spend Tokens
+    }
+
 }
