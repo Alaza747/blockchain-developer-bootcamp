@@ -38,12 +38,18 @@ contract Token {
         public 
         returns (bool success)
     {
+        // Require that account has enough balance, if not a throw/error will be executed
+        require(balanceOf[msg.sender] >= _value);
+        
+        // Sending tokens to some invalid address should not be allowed
+        require(_to != address(0));
+
         // Deduct Tokens from sender
         balanceOf[msg.sender] -= _value;
         // Credit Tokens to receiver
         balanceOf[_to] += _value;
 
-        //Emit Transfer Event
+        // Emit Transfer Event
         emit Transfer(msg.sender, _to, _value);
 
         return true;

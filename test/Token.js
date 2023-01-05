@@ -54,7 +54,7 @@ describe('Token Contract', () => {
             expect(await token.totalSupply()).to.equal(totalSupply)
         })
         
-        it('assigns total Supply to Contract deployer', async () => {
+        it(' assigns total Supply to Contract deployer', async () => {
             expect(await token.balanceOf(deployer.address)).to.equal(totalSupply)
         })
 
@@ -65,30 +65,47 @@ describe('Token Contract', () => {
             transaction,
             result
 
-        beforeEach(async () => {
-            // Transfer tokens
-            amount = tokens(100)
-            transaction = await token.connect(deployer).transfer(receiver.address, amount)
-            result = await transaction.wait()
+        describe("Success Transfer", () => {
+            beforeEach(async () => {
+                // Transfer tokens
+                amount = tokens(100)
+                transaction = await token.connect(deployer).transfer(receiver.address, amount)
+                result = await transaction.wait()
+            })
+    
+            it(' transfers Tokens from one account to another', async () => {
+                // Ensure that tokens were transferred
+                expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))
+                expect(await token.balanceOf(receiver.address)).to.equal(amount)
+            })
+    
+            it(' emits a transfer event', async () => {
+                const event = result.events[0] 
+                expect(await event.event).to.equal('Transfer')
+    
+                // Get the logs of the events
+                const args = event.args
+    
+                // Confirm that the input is correct
+                expect(await args.from).to.equal(deployer.address)
+                expect(await args.to).to.equal(receiver.address)
+                expect(await args.value).to.equal(amount)
+            })
         })
+        
+        describe("Failed Transfer", () => {
+            it(' rejects insufficient balance transfers', async () => {
+                // Transfer more Tokens that available
+                const invalidAmount = tokens(100000000)
+                await expect(token.connect(deployer).transfer(receiver.address, invalidAmount)).to.be.reverted
+            })
 
-        it(' transfers Tokens from one account to another', async () => {
-            // Ensure that tokens were transferred
-            expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))
-            expect(await token.balanceOf(receiver.address)).to.equal(amount)
-        })
-
-        it(' emits a transfer event', async () => {
-            const event = result.events[0] 
-            expect(await event.event).to.equal('Transfer')
-
-            // Get the logs of the events
-            const args = event.args
-
-            // Confirm that the input is correct
-            expect(await args.from).to.equal(deployer.address)
-            expect(await args.to).to.equal(receiver.address)
-            expect(await args.value).to.equal(amount)
+            it(" reject invalid recipient address", async () => {
+                // Transfer to an invalid address
+                const amount = 10;
+                await expect(token.connect(deployer).transfer('0x0000000000000000000000000000000000000000', amount)).to.be.reverted;
+            })
         })
     })
 })
+  
