@@ -86,10 +86,16 @@ contract Token {
         public
         returns (bool success)
     {
-        //Check Approval 
+        // Check Approval 
+        require(_value <= balanceOf[_from]); 
+        require(_value <= allowance[_from][msg.sender]);
 
+        // Reset Allowance (update the approval mapping)
+        allowance[_from][msg.sender] -= _value;
 
-        //Spend Tokens
+        // Spend Tokens
+        _transfer(_from, _to, _value);
+
+        return true;
     }
-
 }

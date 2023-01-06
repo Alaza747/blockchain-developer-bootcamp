@@ -140,4 +140,45 @@ describe('Token Contract', () => {
             })
         })
     })
+
+    describe("Delegated Token Transfers", () => {
+        let amount, transaction, result
+
+        beforeEach(async () => {
+            amount = tokens(100)
+            transaction = await token.connect(deployer).approve(exchange.address, amount)
+            result = await transaction.wait()
+        })
+
+        describe("Success", () => {
+            beforeEach(async () => {
+                transaction = await token.connect(exchange).transferFrom(deployer.address, receiver.address, amount)
+                result = await transaction.wait()
+            })
+            
+            it(" approved account transfers tokens from approving account to another", async () => {
+                expect(await token.balanceOf(deployer.address)).to.be.equal(tokens(999900))
+                expect(await token.balanceOf(receiver.address)).to.be.equal(amount)
+            })
+
+            it(" allowance is resetted after transfer", async () => {
+                expect(await token.allowance(deployer.address, exchange.address)).to.be.equal(0)
+            })
+
+            it(" transfer event is fired", async () => {
+                const event = result.events[0]
+                const args = event.args
+                expect(await event.event).to.be.equal("Transfer")
+                expect(await args.from).to.be.equal(deployer.address)
+                expect(await args.to).to.be.equal(receiver.address)
+                expect(await args.value).to.be.equal(amount)
+            })
+        })
+        
+        describe("Failure", () => {
+            it(" allowance is lower than attempted transfer value", async () => {
+                await expect(token.connect(exchange).transferFrom(deployer.address, receiver.address, tokens(100000000000))).to.be.reverted
+            })
+        })
+    })
 })
