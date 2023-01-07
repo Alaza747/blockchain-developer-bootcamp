@@ -49,22 +49,42 @@ describe('Exchange Contract', () => {
         let transaction, result
         let amount = tokens(10)
 
-        beforeEach(async () => {
-            // Approve
-            transaction = await token1.connect(user1).approve(exchange.address, amount)
-            // Deposit
-            transaction = await exchange.connect(user1).depositToken(token1.address, amount)
-            result = await transaction.wait()
-        })
-        
         describe("Success", () => {
+            
+            beforeEach(async () => {
+                // Approve
+                transaction = await token1.connect(user1).approve(exchange.address, amount)
+                // Deposit
+                transaction = await exchange.connect(user1).depositToken(token1.address, amount)
+                result = await transaction.wait()
+            })
+
             it(" tracks the token deposit", async () => {
-                expect(await token1.balanceOf(exchange.address)).to.equal(amount)
+                expect( await token1.balanceOf(exchange.address)).to.equal(amount)
+            })
+
+            it(" updates user's balance", async () => {
+                // One way to test 
+                expect( await exchange.tokens(token1.address, user1.address)).to.equal(amount)
+                // Another way to test
+                expect( await exchange.balanceOf(token1.address, user1.address)).to.equal(amount)
+            })
+
+            it(" deposit event is fired", async () => {
+                let event = result.events[1]
+                let args = event.args
+                
+                expect(token1.address).to.equal(args.token)
+                expect(user1.address).to.equal(args.user) 
+                expect(amount).to.equal(args.amount)
+                expect(amount).to.equal(args.balance)
             })
         })
 
         describe("Failure", () => {
-            
+            it(" fails when no tokens were approved", async () => [
+                await expect(exchange.connect(user1).depositToken(token1.address, amount)).to.be.reverted
+            ])
         })
     })
 })
