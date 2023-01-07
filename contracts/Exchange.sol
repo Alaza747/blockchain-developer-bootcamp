@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
  // Enables console.log functionality
 import "hardhat/console.sol";
+import "./Token.sol";
+
 
 contract Exchange {
 
@@ -14,7 +16,13 @@ contract Exchange {
         feePercent = _feePercent;
     }
     // Deposit Tokens
+    function depositToken(address _token, uint256 _amount) public {
+        // Trasndfer Tokens to Exchange
+        Token(_token).transferFrom(msg.sender, address(this), _amount);        
+        // Update balance
 
+        // Emit event
+    }
 
     // Withdraw Tokens
 
