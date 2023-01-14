@@ -29,6 +29,7 @@ contract Exchange {
 
     event Deposit(address token, address user, uint256 amount, uint256 balance);
     event Withdraw(address token, address user, uint256 amount, uint256 balance);
+    event Order(uint256 id, address user, address tokenGet, uint256 amountGet, address tokenGive, uint256 amountGive, uint256 timestamp);
 
     constructor(address _feeAccount, uint256 _feePercent){
         feeAccount = _feeAccount;
@@ -81,6 +82,8 @@ contract Exchange {
     address _tokenGive,
     uint256 _amountGive
     ) public {
+        require(balanceOf(_tokenGive, msg.sender) >= _amountGive);
+        
         orderCount += 1;
         orders[orderCount] =  _Order(
             orderCount,
@@ -91,7 +94,16 @@ contract Exchange {
             _amountGive,
             block.timestamp
         );
+        emit Order(orderCount,
+            msg.sender,
+            _tokenGet,
+            _amountGet,
+            _tokenGive,
+            _amountGive,
+            block.timestamp);
     }
+
+    // require token balance
 
     // Cancel Orders
 

@@ -160,14 +160,32 @@ describe('Exchange Contract', () => {
 
                 // Make order
                 transaction = await exchange.connect(user1).makeOrder(token2.address, amount, token1.address, amount)
+                result = await transaction.wait()
             })
 
             it(' tracks the newly created order', async () => {
                 expect(await exchange.orderCount()).to.equal(1)
-            }) 
+            })
+            
+            it(' emits an Order event', async () => {
+                const event = result.events[0]
+                expect(event.event).to.equal('Order')
+
+                const args = event.args
+                expect(args.id).to.equal(1)
+                expect(args.user).to.equal(user1.address)
+                expect(args.tokenGet).to.equal(token2.address)
+                expect(args.amountGet).to.equal(amount)
+                expect(args.tokenGive).to.equal(token1.address)
+                expect(args.amountGive).to.equal(amount)
+                expect(args.timestamp).to.at.least(1)
+            })
         })
 
         describe('Failure', async () => {
+            it(' rejects orders that have no balance', async () => {
+                await expect(exchange.connect(user1).makeOrder(token2.address, amount, token1.address, amount)).to.be.reverted
+            })
 
         })
     })
