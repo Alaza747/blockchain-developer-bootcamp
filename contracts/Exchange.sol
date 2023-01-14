@@ -12,6 +12,14 @@ contract Exchange {
     uint256 public feePercent;
     mapping (address => mapping (address => uint256)) public tokens;
 
+    // Orders Struct
+    struct _OrderBook {
+        address tokenGet;
+        uint256 amountGet;
+        address tokenGive;
+        uint256 amountGive;
+    }
+
     event Deposit(address token, address user, uint256 amount, uint256 balance);
     event Withdraw(address token, address user, uint256 amount, uint256 balance);
 
@@ -58,6 +66,16 @@ contract Exchange {
 
     // Make Orders
 
+    // token "Give" - the token they want to spend - which token, and how much
+    // token "Get" - token that they want to receive - which token, and how much
+    function makeOrder(
+    address _tokenGet,
+    uint256 _amountGet,
+    address _tokenGive,
+    uint256 _amountGive
+    ) public {
+
+    }
 
     // Cancel Orders
 
