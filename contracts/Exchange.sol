@@ -11,14 +11,21 @@ contract Exchange {
     address public feeAccount;
     uint256 public feePercent;
     mapping (address => mapping (address => uint256)) public tokens;
+    uint256 public orderCount;
 
     // Orders Struct
-    struct _OrderBook {
+    struct _Order {
+        uint256 id; // unique identifier
+        address user; // User who made the order
         address tokenGet;
         uint256 amountGet;
         address tokenGive;
         uint256 amountGive;
+        uint256 timestamp; // When was the order created
     }
+
+    mapping (uint256 => _Order) public orders; 
+
 
     event Deposit(address token, address user, uint256 amount, uint256 balance);
     event Withdraw(address token, address user, uint256 amount, uint256 balance);
@@ -74,7 +81,16 @@ contract Exchange {
     address _tokenGive,
     uint256 _amountGive
     ) public {
-
+        orderCount += 1;
+        orders[orderCount] =  _Order(
+            orderCount,
+            msg.sender,
+            _tokenGet,
+            _amountGet,
+            _tokenGive,
+            _amountGive,
+            block.timestamp
+        );
     }
 
     // Cancel Orders

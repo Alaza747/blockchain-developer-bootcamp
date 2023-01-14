@@ -28,6 +28,7 @@ describe('Exchange Contract', () => {
 
         // Deploy Token1 to blockchain
         token1 = await Token.deploy("TonyCoin", "TONY", "1000000")
+        token2 = await Token.deploy("Mock Dai", "mDAI", "1000000")
 
         // Give some test-tokens
         let transaction = await token1.connect(deployer).transfer(user1.address, tokens(100))
@@ -143,6 +144,31 @@ describe('Exchange Contract', () => {
 
         it(" returns users balance", async () => {
             expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(amount)
+        })
+    })
+
+    describe("Making Orders", () => {
+        let transaction, result
+        let amount = tokens(1)
+
+        describe('Success', async () => {
+            beforeEach(async () => {
+                transaction = await token1.connect(user1).approve(exchange.address, amount)
+                result = await transaction.wait()
+                transaction = await exchange.connect(user1).depositToken(token1.address, amount)
+                result = await transaction.wait()
+
+                // Make order
+                transaction = await exchange.connect(user1).makeOrder(token2.address, amount, token1.address, amount)
+            })
+
+            it(' tracks the newly created order', async () => {
+                expect(await exchange.orderCount()).to.equal(1)
+            }) 
+        })
+
+        describe('Failure', async () => {
+
         })
     })
 })
