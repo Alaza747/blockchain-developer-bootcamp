@@ -38,7 +38,6 @@ contract Exchange {
         feePercent = _feePercent;
     }
 
-    // DEPOSIT TOKENS
     function depositToken(address _token, uint256 _amount) public {
         // Transfer Tokens to Exchange
         require(Token(_token).transferFrom(msg.sender, address(this), _amount));
@@ -67,14 +66,6 @@ contract Exchange {
     function balanceOf(address _token, address _user) public view returns (uint256){
         return tokens[_token][_user];
     }
-
-    // Withdraw Tokens
-
-
-    // Check Balances
-
-
-    // Make Orders
 
     // token "Give" - the token they want to spend - which token, and how much
     // token "Get" - token that they want to receive - which token, and how much
@@ -106,7 +97,6 @@ contract Exchange {
             block.timestamp);
     }
 
-    // Cancel Orders
     function cancelOrder(
         uint256 _id
     ) public {
@@ -114,7 +104,7 @@ contract Exchange {
 
         // Order must exist
         require(_order.id == _id);
-        
+
         // Order owner is checked
         require(address(_order.user) == msg.sender);
 
