@@ -1,5 +1,7 @@
+const { wait } = require("@testing-library/user-event/dist/utils");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { experimentalAddHardhatNetworkMessageTraceHook } = require("hardhat/config");
 
 const tokens = (n) => {
     return ethers.utils.parseUnits(n.toString(), "ether")
@@ -206,6 +208,15 @@ describe('Exchange Contract', () => {
             result = await transaction.wait()
             transaction = await exchange.connect(user1).makeOrder(token2.address, amount, token1.address, amount)
             result = await transaction.wait()
+
+            transaction = await token2.connect(deployer).transfer(user2.address, tokens(100))
+            result = await transaction.wait()
+            transaction = await token2.connect(user2).approve(exchange.address, tokens(2))
+            result = await transaction.wait()
+            transaction = await exchange.connect(user2).depositToken(token2.address, tokens(2))
+            result = await transaction.wait()
+
+            
         })
 
         describe(' Cancelling Orders', async () => {
@@ -246,6 +257,66 @@ describe('Exchange Contract', () => {
 
                 it(' rejects the cancellation of another users order', async () => {
                     await expect(exchange.connect(user2).cancelOrder(1)).to.be.reverted
+                })
+            })
+        })
+
+        describe(' Filling Orders', async () => {
+            describe(' Success',  () =>{
+                beforeEach(async () =>{
+                    transaction = await exchange.connect(user2).fillOrder(1)
+                    result = await transaction.wait()
+                })
+    
+                it(' executes the trade and charge fees', async () => {
+                    //TokenGive
+                    expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(tokens(0))
+                    expect(await exchange.balanceOf(token1.address, user2.address)).to.equal(tokens(1))
+                    expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(tokens(0))
+    
+                    //TokenGet
+                    expect(await exchange.balanceOf(token2.address, user1.address)).to.equal(tokens(1))
+                    expect(await exchange.balanceOf(token2.address, user2.address)).to.equal(tokens(0.9))
+                    expect(await exchange.balanceOf(token2.address, feeAccount.address)).to.equal(tokens(0.1))
+                })
+    
+                it(' updates filledOrder mapping', async () => {
+                    expect(await exchange.filledOrder(1)).to.equal(true)
+                })
+    
+                it(' emits a Trade event', async () => {
+                    const event = result.events[0]
+                    expect(event.event).to.equal('Trade')
+    
+                    const args = event.args
+                    expect(args.id).to.equal(1)
+                    expect(args.user).to.equal(user2.address)
+                    expect(args.tokenGet).to.equal(token2.address)
+                    expect(args.amountGet).to.equal(tokens(1))
+                    expect(args.tokenGive).to.equal(token1.address)
+                    expect(args.amountGive).to.equal(tokens(1))
+                    expect(args.creator).to.equal(user1.address)
+                    expect(args.timestamp).to.at.least(1)
+                })
+            })
+
+            describe(' Failure', () => {
+                it(' fails a wrong id order', async () => {
+                    await expect(exchange.connect(user2).fillOrder(999)).to.be.reverted;
+                })
+
+                it(' rejects already filled orders', async () => {
+                    transaction = await exchange.connect(user2).fillOrder(1)
+                    await transaction.wait()
+                    
+                    await expect(exchange.connect(user2).fillOrder(1)).to.be.reverted
+                })
+
+                it(' rejects cancelled orders', async () => {
+                    transaction = await exchange.connect(user1).cancelOrder(1)
+                    await transaction.wait()
+
+                    await expect(exchange.connect(user2).fillOrder(1)).to.be.reverted
                 })
             })
         })
