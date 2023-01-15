@@ -14,8 +14,8 @@ async function main() {
     const mDAI = await ethers.getContractAt('Token', '0x0165878A594ca255338adfa4d48449f69242Eb8F')
     console.log(`mDAI fetched: ${mDAI.address}\n`)
 
-    const Exchange = await ethers.getContractAt('Exchange', '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853')
-    console.log(`Exchange fetched: ${Exchange.address}\n`)
+    const exchange = await ethers.getContractAt('Exchange', '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853')
+    console.log(`exchange fetched: ${exchange.address}\n`)
 
     // Give Tokens to account[1]
     const sender = accounts[0]
@@ -39,7 +39,7 @@ async function main() {
     console.log(`Approved ${amount} TONY from ${user1.address}`)
 
     // user1 deposits 10000 Tony
-    transaction = await Exchange.connect(user1).depositToken(Tony.address, amount)
+    transaction = await exchange.connect(user1).depositToken(Tony.address, amount)
     await transaction.wait()
     console.log(`Deposited ${amount} TONY from ${user1.address}`)
 
@@ -49,7 +49,7 @@ async function main() {
     console.log(` Approved ${amount} mETH from ${user2.address}`)
 
     // user2 deposits 10000 mETH
-    transaction = await Exchange.connect(user2).depositToken(mETH.address, amount)
+    transaction = await exchange.connect(user2).depositToken(mETH.address, amount)
     await transaction.wait()
     console.log(` Deposited ${amount} mETH from ${user2.address}`)
 
