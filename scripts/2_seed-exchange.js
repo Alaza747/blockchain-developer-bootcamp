@@ -4,6 +4,11 @@ const tokens = (n) => {
     return ethers.utils.parseUnits(n.toString(), "ether")
 }
 
+const wait = (seconds) => {
+  const milliseconds = seconds * 1000
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
 async function main() {
     const accounts = await ethers.getSigners();
 
@@ -53,6 +58,72 @@ async function main() {
     await transaction.wait()
     console.log(` Deposited ${amount} mETH from ${user2.address}`)
 
+    //////////////////////
+    // Seed a Cancelled Order
+    //
+
+    // User 1 makes an order to get tokens
+    let orderId
+    transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(100), Tony.address, tokens(5))
+    result = await transaction.wait()
+    console.log(`Made Order from ${user1.address}`)
+
+    // User 1 cancels an order
+    orderId = result.events[0].args.id
+    transaction = await exchange.connect(user1).cancelOrder(orderId)
+    result = await transaction.wait()
+    console.log(`Canceled order from ${user1.address}\n`)
+
+    // Wait 1 second
+    await wait(1)
+
+    //////////////////////
+    // Seed a Filled Order
+    //
+
+    // User1 makes an order
+    let orderId
+    transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(100), Tony.address, tokens(5))
+    result = await transaction.wait()
+    console.log(`Made Order from ${user1.address}`)
+
+    // User2 fills the order
+    orderId = result.events[0].args.id
+    transaction = await exchange.connect(user2).fillOrder(orderId)
+    result = await transaction.wait()
+    console.log(`Filled order from ${user1.address}\n`)  
+
+
+    // Wait 1 second
+    await wait(1)
+      
+    // User1 makes another order
+    transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(50), Tony.address, tokens(15))
+    result = await transaction.wait()
+    console.log(`Made Order from ${user1.address}`)
+
+    // User2 fills another order
+    orderId = result.events[0].args.id
+    transaction = await exchange.connect(user2).fillOrder(orderId)
+    result = await transaction.wait()
+    console.log(`Filled order from ${user1.address}\n`) 
+    
+    // Wait 1 second
+    await wait(1)
+
+    // User1 makes final order
+    transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(200), Tony.address, tokens(20))
+    result = await transaction.wait()
+    console.log(`Made Order from ${user1.address}`)
+
+    // User2 fills final order
+    orderId = result.events[0].args.id
+    transaction = await exchange.connect(user2).fillOrder(orderId)
+    result = await transaction.wait()
+    console.log(`Filled order from ${user1.address}\n`) 
+    
+    // Wait 1 second
+    await wait(1)
 }
 
 // We recommend this pattern to be able to use async/await everywhere
