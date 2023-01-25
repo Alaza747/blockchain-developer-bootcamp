@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { method } from 'lodash';
 import { ethers } from 'ethers';
+import { Store } from 'redux';
 import config from '../config.json';
 import TOKEN_ABI from '../abis/Token.json';
 import '../App.css';
