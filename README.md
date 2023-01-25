@@ -11,3 +11,13 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
+
+
+What to do at the beginning:
+
+- open terminal and cd to the project directory
+- "npx hh node"
+- open another terminal tab
+- "npx hh RUN scripts/1_deploy.js"
+- open another terminal tab
+- "npx hh start"
