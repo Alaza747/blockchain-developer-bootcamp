@@ -20,4 +20,4 @@ What to do at the beginning:
 - open another terminal tab
 - "npx hh RUN scripts/1_deploy.js"
 - open another terminal tab
-- "npx hh start"
+- "nom start"
