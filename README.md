@@ -18,6 +18,6 @@ What to do at the beginning:
 - open terminal and cd to the project directory
 - "npx hh node"
 - open another terminal tab
-- "npx hh RUN scripts/1_deploy.js"
+- "npx hh run scripts/1_deploy.js --network localhost"
 - open another terminal tab
 - "nom start"
