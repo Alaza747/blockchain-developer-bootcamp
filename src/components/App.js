@@ -23,8 +23,14 @@ function App() {
     // Fetch the networks ChainID (e.g. hh:31337)
     const chainId = await loadNetwork(provider, dispatch)
     
-    // Fetch currenct account and balance from metamask
-    await loadAccount(provider, dispatch)
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
+    })
+
+    // Fetch currenct account and balance from metamask when changed
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch)
+    })
 
     // Load Token Smart Contract
     const Tony = config[chainId].Tony
