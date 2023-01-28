@@ -20,4 +20,4 @@ What to do at the beginning:
 - open another terminal tab
 - "npx hh run scripts/1_deploy.js --network localhost"
 - open another terminal tab
-- "nom start"
+- "npm start"
