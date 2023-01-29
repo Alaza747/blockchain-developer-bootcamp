@@ -1,12 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import tony from '../assets/dapp.svg';
 
-import { loadBalances } from '../store/interactions'; 
+import { 
+    loadBalances,
+    transferTokens 
+} from '../store/interactions'; 
 
 const Balance = () => {
+    const [token1TransferAmount, setToken1TransferAmount] = useState(0)
+    
     const dispatch = useDispatch()
+    
+    const provider = useSelector(state => state.provider.connection)
     
     const account = useSelector(state => state.provider.account)
     const exchange = useSelector(state => state.exchange.contract)
@@ -15,6 +22,21 @@ const Balance = () => {
     const symbols = useSelector(state => state.tokens.symbols)
 
     const tokenBalances = useSelector(state => state.tokens.balances)
+
+    const amountHandler = (e, token) => {
+        if(token.address === tokens[0].address) {
+            setToken1TransferAmount(e.target.value)
+        }
+    }
+
+    const depositHandler = (e, token) => {
+        // Prevents the default behaviour of the refresher (refresh website)
+        e.preventDefault()
+        if (token.address === tokens[0].address) {
+            transferTokens(provider, exchange, 'Deposit', token, token1TransferAmount, dispatch)
+        }
+    }
+
 
     useEffect(() => {
         if(exchange && tokens[0] && tokens[1] && account){
@@ -41,12 +63,12 @@ const Balance = () => {
             <p><small>Exchange</small><br />{exchangeBalances && exchangeBalances[0]}</p>
           </div>
   
-          <form>
-            <label htmlFor="token0"></label>
-            <input type="text" id='token0' placeholder='0.0000' />
+          <form onSubmit={(e) => depositHandler(e, tokens[0])}>
+            <label htmlFor="token0">{symbols && symbols[0]} amount</label>
+            <input type="text" id='token0' placeholder='0.0000' onChange={(e) => amountHandler(e, tokens[0])}/>
   
             <button className='button' type='submit'>
-              <span></span>
+              <span>Deposit</span>
             </button>
           </form>
         </div>
