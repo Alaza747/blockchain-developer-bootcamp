@@ -1,6 +1,26 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
+import tony from '../assets/dapp.svg';
+
+import { loadBalances } from '../store/interactions'; 
 
 const Balance = () => {
+    const dispatch = useDispatch()
+    
+    const account = useSelector(state => state.provider.account)
+    const exchange = useSelector(state => state.exchange.contract)
+    const exchangeBalances = useSelector(state => state.exchange.balances)
+    const tokens = useSelector(state => state.tokens.contracts)
+    const symbols = useSelector(state => state.tokens.symbols)
+
+    const tokenBalances = useSelector(state => state.tokens.balances)
+
+    useEffect(() => {
+        if(exchange && tokens[0] && tokens[1] && account){
+            loadBalances(exchange, tokens, account, dispatch)
+        }        
+    }, [exchange, tokens, account])
 
     return (
       <div className='component exchange__transfers'>
@@ -12,11 +32,13 @@ const Balance = () => {
           </div>
         </div>
   
-        {/* Deposit/Withdraw Component 1 (DApp) */}
+        {/* Deposit/Withdraw Component 1 (Tony) */}
   
         <div className='exchange__transfers--form'>
           <div className='flex-between'>
-  
+            <p><small>Token</small><br /><img src={tony} alt="Token Logo" />{symbols && symbols[0]}</p>
+            <p><small>Wallet</small><br />{tokenBalances && tokenBalances[0]}</p>
+            <p><small>Exchange</small><br />{exchangeBalances && exchangeBalances[0]}</p>
           </div>
   
           <form>
