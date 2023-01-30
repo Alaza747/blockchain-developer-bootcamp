@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import TOKEN_ABI from '../abis/Token.json';
 import EXCHANGE_ABI from '../abis/Exchange.json';
+import { exchange } from "./reducers";
 
 
 export const loadProvider = (dispatch) => {
@@ -51,6 +52,12 @@ export const loadExchange = async (provider, address, dispatch) => {
     return exchange
 }
 
+export const subsribeToEvents = (exchange, dispatch) => {
+    exchange.on("Deposit", (token, user, amount, balance, event) => {
+        dispatch({ type: 'TRANSFER_SUCCESS', event })
+    })
+}
+
 export const loadBalances = async (exchange, tokens, account, dispatch) => {
     let balance = ethers.utils.formatEther(await tokens[0].balanceOf(account), 18)
     dispatch({ type: 'TOKEN_1_BALANCE_LOADED', balance })
@@ -68,14 +75,18 @@ export const loadBalances = async (exchange, tokens, account, dispatch) => {
 export const transferTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
     let transaction
     
-    const signer = await provider.getSigner()
-    const amountToTransfer = ethers.utils.parseUnits(amount.toString(), 18)
+    dispatch({ type: 'TRANSFER_REQUEST'})
 
-    transaction = await token.connect(signer).approve(exchange.address, amountToTransfer)
-    await transaction.wait()
-    transaction = await exchange.connect(signer).depositToken(token.address, amountToTransfer)
+    try {
+        const signer = await provider.getSigner()
+        const amountToTransfer = ethers.utils.parseUnits(amount.toString(), 18)
     
+        transaction = await token.connect(signer).approve(exchange.address, amountToTransfer)
+        await transaction.wait()
+        transaction = await exchange.connect(signer).depositToken(token.address, amountToTransfer)
+    } catch (error) {
+        dispatch({ type: 'TRANSFER_FAIL' })
+    }
+
     await transaction.wait()
-
-
 }

@@ -8,7 +8,8 @@ import {
   loadNetwork,
   loadAccount,
   loadTokens,
-  loadExchange
+  loadExchange,
+  subsribeToEvents
 } from '../store/interactions';
 
 import Navbar from './Navbar';
@@ -40,7 +41,11 @@ function App() {
     await loadTokens(provider, [Tony.address, mETH.address], dispatch) 
     
     // Load exchange contract
-    await loadExchange(provider, config[chainId].exchange.address, dispatch)
+    const exchange = await loadExchange(provider, config[chainId].exchange.address, dispatch)
+
+    subsribeToEvents(exchange, dispatch)
+
+
   }
     
   useEffect(() => {
