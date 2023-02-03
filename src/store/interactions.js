@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import TOKEN_ABI from '../abis/Token.json';
 import EXCHANGE_ABI from '../abis/Exchange.json';
-import { exchange } from "./reducers";
+import { exchange, provider } from "./reducers";
 
 
 export const loadProvider = (dispatch) => {
@@ -79,6 +79,20 @@ export const loadBalances = async (exchange, tokens, account, dispatch) => {
 
     balance = ethers.utils.formatEther(await exchange.balanceOf(tokens[1].address, account), 18)
     dispatch({ type: 'EXCHANGE_TOKEN_2_BALANCE_LOADED', balance })
+}
+
+export const loadAllOrders = async (provider, exchange, dispatch) => {
+
+    // Get the most recent blocknumber 
+    const block = await provider.getBlockNumber()
+
+    // Fetch all orders by querying the blockchain for events named 'Order' from blocknumber 0 up to the recent blocknumber
+    const orderStream = await exchange.queryFilter('Order', 0, block)
+    
+    // Map all the args of each event to the event itself 
+    const allOrders = orderStream.map(event => event.args)
+
+    dispatch({ type: 'ALL_ORDERS_LOADED', allOrders})
 }
 
 export const transferTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
