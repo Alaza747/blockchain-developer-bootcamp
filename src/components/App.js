@@ -9,7 +9,8 @@ import {
   loadAccount,
   loadTokens,
   loadExchange,
-  subsribeToEvents
+  subsribeToEvents,
+  loadAllOrders
 } from '../store/interactions';
 
 import Navbar from './Navbar';
@@ -45,6 +46,10 @@ function App() {
     // Load exchange contract
     const exchange = await loadExchange(provider, config[chainId].exchange.address, dispatch)
 
+    // Fetch all orders: open, filled, cancelled
+    loadAllOrders(provider, exchange, dispatch)
+
+    // Listen to events from blockchain
     subsribeToEvents(exchange, dispatch)
 
 
