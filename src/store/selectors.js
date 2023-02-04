@@ -1,5 +1,6 @@
 import { createSelector } from "reselect";
 import { get } from "lodash";
+import moment from "moment";
 import { ethers } from "ethers";
 
 const tokens = state => get(state, 'tokens.contracts');
@@ -27,7 +28,8 @@ const decorateOrder = (order, tokens) => {
         ...order,
         token0Amount: ethers.utils.formatUnits(token0Amount, "ether"),
         token1Amount: ethers.utils.formatUnits(token1Amount, "ether"), 
-        tokenPrice: tokenPrice
+        tokenPrice: tokenPrice,
+        formattedTimestamp : moment.unix(order.timestamp).format('HH:mm:ss DD-MM-YYYY')
     })
 }
 
