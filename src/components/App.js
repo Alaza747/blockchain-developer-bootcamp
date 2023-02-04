@@ -9,8 +9,8 @@ import {
   loadAccount,
   loadTokens,
   loadExchange,
-  subsribeToEvents,
-  loadAllOrders
+  loadAllOrders,
+  subsribeToEvents
 } from '../store/interactions';
 
 import Navbar from './Navbar';
@@ -51,8 +51,6 @@ function App() {
 
     // Listen to events from blockchain
     subsribeToEvents(exchange, dispatch)
-
-
   }
     
   useEffect(() => {
