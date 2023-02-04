@@ -51,7 +51,6 @@ export const orderBookSelector = createSelector(
         orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address);
         orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address);
 
-
         orders = decorateOrderBookOrders(orders, tokens)
 
         // Group by the order Type
@@ -67,7 +66,7 @@ export const orderBookSelector = createSelector(
         }
 
         // Fetch all sell orders
-        const sellOrders = get(orders, 'buy', [])
+        const sellOrders = get(orders, 'sell', [])
 
         // Sort the sell orders by token price
         orders = {
@@ -75,6 +74,7 @@ export const orderBookSelector = createSelector(
             sellOrders: sellOrders.sort((a, b) => b.tokenPrice - a.tokenPrice)
         }
 
+        console.log(orders)
         return orders
     }
 )
