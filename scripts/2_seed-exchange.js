@@ -1,9 +1,10 @@
 const { ethers } = require("hardhat");
 const config = require('../src/config.json')
-const { attempt } = require("lodash");
+
 const tokens = (n) => {
     return ethers.utils.parseUnits(n.toString(), "ether")
 }
+
 const wait = (seconds) => {
   const milliseconds = seconds * 1000
   return new Promise(resolve => setTimeout(resolve, milliseconds))
