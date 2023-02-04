@@ -6,6 +6,10 @@ import { ethers } from "ethers";
 const tokens = state => get(state, 'tokens.contracts');
 const allOrders = state => get(state, 'exchange.allOrders.data', []);
 
+const GREEN = '#25CE8F'
+const RED = '#F45353'
+
+// General decorateOrder function to populate the order with base data (e.g. timestamp, amount, price)
 const decorateOrder = (order, tokens) => {
 
     let token0Amount, token1Amount
@@ -27,9 +31,9 @@ const decorateOrder = (order, tokens) => {
     return ({
         ...order,
         token0Amount: ethers.utils.formatUnits(token0Amount, "ether"),
-        token1Amount: ethers.utils.formatUnits(token1Amount, "ether"), 
+        token1Amount: ethers.utils.formatUnits(token1Amount, "ether"),
         tokenPrice: tokenPrice,
-        formattedTimestamp : moment.unix(order.timestamp).format('HH:mm:ss DD-MM-YYYY')
+        formattedTimestamp: moment.unix(order.timestamp).format('HH:mm:ss DD-MM-YYYY')
     })
 }
 
@@ -47,11 +51,32 @@ export const orderBookSelector = createSelector(
         orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address);
         orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address);
 
-        // Decorate orders
-        orders.map((order) => {
-            let o = decorateOrder(order, tokens);
-            console.log(o);
-        })
 
+        orders = decorateOrderBookOrders(orders, tokens)
+        console.log(orders)
     }
 )
+
+
+// Function to wrap the decorateOrderBook() and decorateOrderBookOrders()
+const decorateOrderBookOrders = (orders, tokens) => {
+    return (
+        orders.map((order) => {
+            order = decorateOrder(order, tokens);
+            order = decorateOrderBookOrder(order, tokens);
+            return (order)
+        })
+    )
+}
+
+// Additional decorating function to populate orders with order type
+const decorateOrderBookOrder = (order, tokens) => {
+    const orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+
+    return ({
+        ...order,
+        orderType,
+        orderTypeClass: (orderType === 'buy' ? GREEN : RED),
+        orderFillAction: (orderType === 'buy' ? 'sell' : 'buy')
+    })
+}
