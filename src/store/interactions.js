@@ -132,6 +132,7 @@ export const makeBuyOrder = async (provider, exchange, tokens, order, dispatch) 
         const signer = await provider.getSigner()
         const transaction = await exchange.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
         await transaction.wait()
+        dispatch({ type: 'NEW_ORDER_SUCCESS' })
     } catch (error) {
         dispatch({ type: 'NEW_ORDER_FAIL' })
     }
@@ -150,6 +151,7 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
         const signer = await provider.getSigner()
         const transaction = await exchange.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
         await transaction.wait()
+        dispatch({ type: 'NEW_ORDER_SUCCESS' })
     } catch (error) {
         dispatch({ type: 'NEW_ORDER_FAIL' })
     }
