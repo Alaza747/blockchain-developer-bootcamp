@@ -1,10 +1,27 @@
 import { createSelector } from "reselect";
-import { get, groupBy } from "lodash";
+import { get, groupBy, reject } from "lodash";
 import moment from "moment";
 import { ethers } from "ethers";
 
 const tokens = state => get(state, 'tokens.contracts');
 const allOrders = state => get(state, 'exchange.allOrders.data', []);
+const cancelledOrders = state => get(state, 'exchange.cancelledOrders.data', []);
+const filledOrders = state => get(state, 'exchange.filledOrders.data', []);
+
+const openOrders = state => {
+    const all = allOrders(state)
+    const filled = filledOrders(state)
+    const cancelled = cancelledOrders(state)
+
+    const openOrders = reject(all, (order)=> {
+        const orderFilled = filled.some((o) => o.id.toString() === order.id.toString())
+        const orderCancelled = cancelled.some((o) => o.id.toString() === order.id.toString())
+        return(orderFilled || orderCancelled)
+    })
+
+    return openOrders
+
+}
 
 const GREEN = '#25CE8F'
 const RED = '#F45353'
@@ -41,7 +58,7 @@ const decorateOrder = (order, tokens) => {
 // ORDER BOOK
 
 export const orderBookSelector = createSelector(
-    allOrders,
+    openOrders,
     tokens,
     (orders, tokens) => {
         // Check if there are both tokens present
