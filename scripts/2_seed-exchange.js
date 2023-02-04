@@ -142,7 +142,7 @@ async function main() {
     transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(10 * i), Tony.address, tokens(10))
     result = await transaction.wait()
 
-    console.log(`Makes order from ${user1.address}`)
+    console.log(`Made order from ${user1.address}`)
 
     await wait(1)
   }
@@ -152,7 +152,7 @@ async function main() {
     transaction = await exchange.connect(user2).makeOrder(Tony.address, tokens(10), mETH.address, tokens(10 * i))
     result = await transaction.wait()
 
-    console.log(`Makes order from ${user2.address}`)
+    console.log(`Made order from ${user2.address}`)
 
     await wait(1)
   }
