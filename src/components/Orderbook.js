@@ -16,44 +16,67 @@ const OrderBook = () => {
             </div>
 
             <div className="flex">
+                {!orderBook || orderBook.sellOrders.length === 0 ? (
+                    <p className="flex-center">No Sell Orders</p>
+                ) : (
+                    <table className='exchange__orderbook--sell'>
+                        <caption>Selling</caption>
+                        <thead>
+                            <tr>
+                                <th>{symbols && symbols[0]}<img src={sort} alt="Sort" /></th>
+                                <th>{symbols && symbols[0]}/{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
+                                <th>{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                <table className='exchange__orderbook--sell'>
-                    <caption>Selling</caption>
-                    <thead>
-                        <tr>
-                            <th>{symbols && symbols[0]}<img src={sort} alt="Sort" /></th>
-                            <th>{symbols && symbols[0]}/{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
-                            <th>{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </tbody>
-                </table>
+                            {/* MAPPING THE SELL ORDERS.... */}
 
+                            {orderBook && orderBook.sellOrders.map((order, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <th>{order.token0Amount}</th>
+                                        <th style={{ color: `${order.orderTypeClass}` }}>{order.tokenPrice}</th>
+                                        <th>{order.token1Amount}</th>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+
+                )}
                 <div className='divider'></div>
 
-                <table className='exchange__orderbook--buy'>
-                    <caption>Buying</caption>
-                    <thead>
-                        <tr>
-                            <th>{symbols && symbols[0]}<img src={sort} alt="Sort" /></th>
-                            <th>{symbols && symbols[0]}/{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
-                            <th>{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                {!orderBook || orderBook.buyOrders.length === 0 ? (
+                    <p className="flex-center">No Buy Orders</p>
+                ) : (
+                    <table className='exchange__orderbook--buy'>
+                        <caption>Buying</caption>
+                        <thead>
+                            <tr>
+                                <th>{symbols && symbols[0]}<img src={sort} alt="Sort" /></th>
+                                <th>{symbols && symbols[0]}/{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
+                                <th>{symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {/* MAPPING THE BUY ORDERS.... */}
+
+                            {orderBook && orderBook.buyOrders.map((order, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <th>{order.token0Amount}</th>
+                                        <th style={{ color: `${order.orderTypeClass}` }}>{order.tokenPrice}</th>
+                                        <th>{order.token1Amount}</th>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+
+                )}
+
             </div>
         </div>
     );
