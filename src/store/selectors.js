@@ -56,10 +56,28 @@ export const orderBookSelector = createSelector(
 
         // Group by the order Type
         orders = groupBy(orders, 'orderType')
-        console.log(orders)
+
+        // Fetch all buy orders
+        const buyOrders = get(orders, 'buy', [])
+
+        // Sort the buy orders by token price
+        orders = {
+            ...orders,
+            buyOrders: buyOrders.sort((a, b) => b.tokenPrice - a.tokenPrice)
+        }
+
+        // Fetch all sell orders
+        const sellOrders = get(orders, 'buy', [])
+
+        // Sort the sell orders by token price
+        orders = {
+            ...orders,
+            sellOrders: sellOrders.sort((a, b) => b.tokenPrice - a.tokenPrice)
+        }
+
+        return orders
     }
 )
-
 
 // Function to wrap the decorateOrderBook() and decorateOrderBookOrders()
 const decorateOrderBookOrders = (orders, tokens) => {
