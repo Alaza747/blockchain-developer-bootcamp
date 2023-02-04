@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { get } from "lodash";
+import { get, groupBy } from "lodash";
 import moment from "moment";
 import { ethers } from "ethers";
 
@@ -53,6 +53,9 @@ export const orderBookSelector = createSelector(
 
 
         orders = decorateOrderBookOrders(orders, tokens)
+
+        // Group by the order Type
+        orders = groupBy(orders, 'orderType')
         console.log(orders)
     }
 )
