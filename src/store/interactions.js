@@ -1,8 +1,6 @@
 import { ethers } from "ethers";
 import TOKEN_ABI from '../abis/Token.json';
 import EXCHANGE_ABI from '../abis/Exchange.json';
-import { exchange, provider } from "./reducers";
-
 
 export const loadProvider = (dispatch) => {
     const connection = new ethers.providers.Web3Provider(window.ethereum)
@@ -27,7 +25,7 @@ export const loadAccount = async (provider, dispatch) => {
     let balance = await provider.getBalance(account)
     balance = ethers.utils.formatEther(balance)
 
-    dispatch({ type: 'BALANCE_LOADED', balance })
+    dispatch({ type: 'ETHER_BALANCE_LOADED', balance })
     return account
 }
 
@@ -67,6 +65,9 @@ export const subsribeToEvents = (exchange, dispatch) => {
     })
 }
 
+// ------------------------------------
+// LOAD USER BALANCES (WALLETS & EXCHANGE BALANCES)
+
 export const loadBalances = async (exchange, tokens, account, dispatch) => {
     let balance = ethers.utils.formatEther(await tokens[0].balanceOf(account), 18)
     dispatch({ type: 'TOKEN_1_BALANCE_LOADED', balance })
@@ -81,6 +82,9 @@ export const loadBalances = async (exchange, tokens, account, dispatch) => {
     dispatch({ type: 'EXCHANGE_TOKEN_2_BALANCE_LOADED', balance })
 }
 
+// ------------------------------------
+// LOAD ALL ORDERS
+
 export const loadAllOrders = async (provider, exchange, dispatch) => {
 
     // Get the most recent blocknumber 
@@ -92,8 +96,11 @@ export const loadAllOrders = async (provider, exchange, dispatch) => {
     // Map all the args of each event to the event itself 
     const allOrders = orderStream.map(event => event.args)
 
-    dispatch({ type: 'ALL_ORDERS_LOADED', allOrders})
+    dispatch({ type: 'ALL_ORDERS_LOADED', allOrders })
 }
+
+// ------------------------------------
+// TRANSFER TOKENS (DEPOSIT & WITHDRAWS)
 
 export const transferTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
     let transaction
@@ -109,7 +116,6 @@ export const transferTokens = async (provider, exchange, transferType, token, am
             await transaction.wait()
             transaction = await exchange.connect(signer).depositToken(token.address, amountToTransfer)
         } else {
-            console.log("Here")
             transaction = await exchange.connect(signer).withdrawTokens(token.address, amountToTransfer)
         }
 
@@ -138,7 +144,6 @@ export const makeBuyOrder = async (provider, exchange, tokens, order, dispatch) 
     } catch (error) {
         dispatch({ type: 'NEW_ORDER_FAIL' })
     }
-
 }
 
 export const makeSellOrder = async (provider, exchange, tokens, order, dispatch) => {
@@ -156,5 +161,4 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
     } catch (error) {
         dispatch({ type: 'NEW_ORDER_FAIL' })
     }
-
 }
