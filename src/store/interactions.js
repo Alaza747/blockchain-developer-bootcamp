@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import TOKEN_ABI from '../abis/Token.json';
 import EXCHANGE_ABI from '../abis/Exchange.json';
+import { fill } from "lodash";
 
 export const loadProvider = (dispatch) => {
     const connection = new ethers.providers.Web3Provider(window.ethereum)
@@ -90,12 +91,22 @@ export const loadAllOrders = async (provider, exchange, dispatch) => {
     // Get the most recent blocknumber 
     const block = await provider.getBlockNumber()
 
+    // FETCH CANCELLED ORDERS
     // Fetch all orders by querying the blockchain for events named 'Order' from blocknumber 0 up to the recent blocknumber
-    const orderStream = await exchange.queryFilter('Order', 0, block)
-    
-    // Map all the args of each event to the event itself 
-    const allOrders = orderStream.map(event => event.args)
+    const cancelStream = await exchange.queryFilter('Cancel', 0 , block)
 
+    // Map all the args of each event to the event itself 
+    const cancelledOrders = cancelStream.map(event => event.args)
+    dispatch({ type: 'CANCELLED_ORDERS_LOADED', cancelledOrders })
+
+    // SAME FOR FILLED ORDERS
+    const filledStream = await exchange.queryFilter('Trade', 0, block)
+    const filledOrders = filledStream.map(event => event.args)
+    dispatch({ type: 'FILLED_ORDERS_LOADED', filledOrders })
+
+    // SAME FOR ALL ORDERS
+    const orderStream = await exchange.queryFilter('Order', 0, block)
+    const allOrders = orderStream.map(event => event.args)
     dispatch({ type: 'ALL_ORDERS_LOADED', allOrders })
 }
 
