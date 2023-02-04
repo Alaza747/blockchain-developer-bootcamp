@@ -2,8 +2,12 @@ import { useSelector } from "react-redux";
 
 import sort from '../assets/sort.svg'
 
+import { orderBookSelector } from "../store/selectors";
+
 const OrderBook = () => {
     const symbols = useSelector(state => state.tokens.symbols);
+    const orderBook = useSelector(orderBookSelector);
+
 
     return (
         <div className="component exchange__orderbook">
