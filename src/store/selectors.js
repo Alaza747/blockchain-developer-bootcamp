@@ -137,7 +137,16 @@ export const priceChartSelector = createSelector(
         // Sort the orders by timestamp
         orders = orders.sort((a, b) => a.timestamp - b.timestamp)
 
+        // Fetching second last and last filled orders
+        let secondLastOrder, lastOrder
+        [secondLastOrder, lastOrder] = orders.slice(orders.length - 2, orders.length)
+
+        const lastPrice = get(lastOrder, 'tokenPrice', 0)
+        const secondLastPrice = get(secondLastOrder, 'tokenPrice', 0)
+
         return ({
+            lastPrice: lastPrice,
+            lastPriceChange: (lastPrice >= secondLastPrice ? '+' : '-'),
             series: [{
                 data: buildGraphData(orders)
             }]
