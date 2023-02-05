@@ -2,7 +2,10 @@ import { useSelector } from "react-redux";
 
 import Chart from "react-apexcharts";
 
-import { options, series } from "./PriceChart.config";
+import arrowUp from "../assets/up-arrow.svg";
+import arrowDown from "../assets/down-arrow.svg";
+
+import { options, defaultSeries } from "./PriceChart.config";
 
 import { priceChartSelector } from "../store/selectors";
 
@@ -20,10 +23,19 @@ const PriceChart = () => {
 
                     <h2>{symbols && `${symbols[0]}/${symbols[1]}`}</h2>
 
-                    <div className='flex'>
-                        {/* <img src="" alt="Arrow down" /> */}
-                        <span className='up'></span>
-                    </div>
+                    {priceChart && (
+                        <div className='flex'>
+
+                            {priceChart.lastPriceChange === "+" ? (
+                                <img src={arrowUp} alt="Arrow up" />
+                            ) : (
+                                <img src={arrowDown} alt="Arrow down" />
+                            )}
+
+                            <span className='up'>{priceChart.lastPrice}</span>
+                        </div>
+                    )}
+
 
                 </div>
             </div>
@@ -31,10 +43,10 @@ const PriceChart = () => {
             {!account ? (
                 <Banner text={'Please connect with Metamask'} />
             ) : (
-                <Chart 
+                <Chart
                     type="candlestick"
                     options={options}
-                    series={priceChart ? priceChart.series : series}
+                    series={priceChart ? priceChart.series : defaultSeries}
                     width="100%"
                     height="100%"
                 />
