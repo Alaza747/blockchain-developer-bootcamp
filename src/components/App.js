@@ -17,8 +17,8 @@ import Navbar from './Navbar';
 import Markets from './Markets';
 import Balance from './Balance';
 import Order from './Order';
-import OrderBook from './Orderbook';
 import PriceChart from './PriceChart';
+import OrderBook from './Orderbook';
 
 function App() {
   const dispatch = useDispatch();
