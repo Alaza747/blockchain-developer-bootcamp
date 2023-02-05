@@ -4,6 +4,7 @@ import moment from "moment";
 import { ethers } from "ethers";
 
 const tokens = state => get(state, 'tokens.contracts');
+
 const allOrders = state => get(state, 'exchange.allOrders.data', []);
 const cancelledOrders = state => get(state, 'exchange.cancelledOrders.data', []);
 const filledOrders = state => get(state, 'exchange.filledOrders.data', []);
@@ -55,6 +56,65 @@ const decorateOrder = (order, tokens) => {
 }
 
 // ----------------------------------------------------------------
+// FILLED ORDERS SELECTOR
+
+export const filledOrdersSelector = createSelector(
+    filledOrders,
+    tokens,
+    (orders, tokens) => {
+        if (!tokens[0] || !tokens[1]) { return }
+
+        orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address);
+        orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address);
+
+        // Sort orders by timestamp ascending to be able to compare them regarding the price
+        orders = orders.sort((a, b) => a.timestamp - b.timestamp)
+
+        // Apply decorateOrder function
+        orders = decorateFilledOrders(orders, tokens)
+
+        // Sort orders by timestamp descending for UI
+        orders = orders.sort((a, b) => b.timestamp - a.timestamp)
+
+        return orders
+    }
+)
+
+const decorateFilledOrders = (orders, tokens) => {
+
+    let previousOrder = orders[0]
+
+    return (
+        orders = orders.map((order) => {
+            order = decorateOrder(order, tokens)
+            order = decorateFilledOrder(order, previousOrder)
+            previousOrder = order // Update the previous order once being decorated
+            return order
+        })
+    )
+}
+
+const decorateFilledOrder = (order, previousOrder) => {
+    return ({
+        ...order,
+        tokenPriceClass: tokenPriceClass(order.tokenPrice, order.id, previousOrder),
+    })
+}
+
+const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
+    if (previousOrder.id === orderId) {
+        return GREEN
+    }
+
+    if (previousOrder.tokenPrice <= tokenPrice) {
+        return GREEN
+    } else {
+        return RED
+    }
+
+}
+
+// ----------------------------------------------------------------
 // ORDER BOOK
 
 export const orderBookSelector = createSelector(
@@ -64,7 +124,7 @@ export const orderBookSelector = createSelector(
         // Check if there are both tokens present
         if (!tokens[0] || !tokens[1]) { return }
 
-        // Filter orders by selected tokens
+        // Filter orders by selected token pair
         orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address);
         orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address);
 
