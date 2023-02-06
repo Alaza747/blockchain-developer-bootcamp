@@ -18,9 +18,9 @@ import Markets from './Markets';
 import Balance from './Balance';
 import Order from './Order';
 import PriceChart from './PriceChart';
+import Transactions from './Transactions';
 import OrderBook from './Orderbook';
 import Trades from './Trades';
-import Transactions from './Transactions';
 
 function App() {
   const dispatch = useDispatch();
