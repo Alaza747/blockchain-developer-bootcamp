@@ -4,6 +4,7 @@ import moment from "moment";
 import { ethers } from "ethers";
 
 const tokens = state => get(state, 'tokens.contracts');
+const account = state => get(state, 'provider.account');
 
 const allOrders = state => get(state, 'exchange.allOrders.data', []);
 const cancelledOrders = state => get(state, 'exchange.cancelledOrders.data', []);
@@ -26,6 +27,58 @@ const openOrders = state => {
 
 const GREEN = '#25CE8F'
 const RED = '#F45353'
+
+// ----------------------------------------------------------------
+// MY OPEN ORDERS
+
+export const myOpenOrdersSelector = createSelector(
+    account,
+    tokens, 
+    openOrders,
+    (account, tokens, orders) => {
+        if(!tokens[0] && !tokens[1]) {return}
+
+        // Filter our orders created by cuurent account
+        orders = orders.filter((order) => order.user === account)
+        
+
+        // Filter orders by token adresses
+        orders = orders.filter((order) => order.tokenGet === tokens[0].address || order.tokenGet === tokens[1].address)
+        orders = orders.filter((order) => order.tokenGive === tokens[0].address || order.tokenGive === tokens[1].address)
+        
+        // Decorate orders - add display attributes
+        orders = decorateMyOpenOrders(orders, tokens)
+
+        // Sort orders by date descending
+        orders = orders.sort((a, b) => b.timestamp - a.timestamp)
+
+        return orders
+
+    }
+)
+
+const decorateMyOpenOrders = (orders, tokens) => {
+    return (
+        orders.map((order) => {
+            order = decorateOrder(order, tokens)
+            order = decorateMyOpenOrder(order, tokens)
+            return(order)
+        })
+    )
+}
+
+const decorateMyOpenOrder = (order, tokens) => {
+    let orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+
+
+    return({
+        ...order,
+        orderType,
+        orderTypeClass: (orderType === 'buy' ? GREEN : RED)
+    })
+}
+
+
 
 // General decorateOrder function to populate the order with base data (e.g. timestamp, amount, price)
 const decorateOrder = (order, tokens) => {
