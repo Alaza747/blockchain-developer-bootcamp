@@ -63,6 +63,9 @@ export const tokens = (state = DEFAULT_TOKENS_STATE, action) => {
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+// EXCHANGE REDUCER
+
 const DEFAULT_EXCHANGE_STATE = {
     loaded: false,
     contract: {},
@@ -73,11 +76,14 @@ const DEFAULT_EXCHANGE_STATE = {
         loaded: false,
         data: []
     },
+    cancelledOrders: {
+        data: []
+    },
+    filledOrders: {
+        data: []
+    },
     events: []
 }
-
-// ------------------------------------------------------------------------------------------------
-// EXCHANGE REDUCER
 
 export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
     let index, data
@@ -205,8 +211,6 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                     isError: true
                 }
             }
-
-
 
         // ----------------------------------------------------------------
         // BALANCE CASES
