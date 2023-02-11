@@ -195,6 +195,16 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                 },
                 events: [action.event, ...state.events]
             }
+        case 'ORDER_FILL_FAIL':
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'Fill Order',
+                    isPending: false,
+                    isSuccesful: false,
+                    isError: true
+                }
+            }
 
 
 
