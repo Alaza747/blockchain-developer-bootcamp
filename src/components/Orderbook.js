@@ -8,6 +8,10 @@ const OrderBook = () => {
     const symbols = useSelector(state => state.tokens.symbols);
     const orderBook = useSelector(orderBookSelector);
 
+    const fillOrderHandler = (order) => {
+        console.log("Fill order", order);
+    }
+
 
     return (
         <div className="component exchange__orderbook">
@@ -34,7 +38,7 @@ const OrderBook = () => {
 
                             {orderBook && orderBook.sellOrders.map((order, index) => {
                                 return (
-                                    <tr key={index}>
+                                    <tr key={index} onClick={() => fillOrderHandler(order)}>
                                         <th>{order.token0Amount}</th>
                                         <th style={{ color: `${order.orderTypeClass}` }}>{order.tokenPrice}</th>
                                         <th>{order.token1Amount}</th>
@@ -65,7 +69,7 @@ const OrderBook = () => {
 
                             {orderBook && orderBook.buyOrders.map((order, index) => {
                                 return (
-                                    <tr key={index}>
+                                    <tr key={index} onClick={() => fillOrderHandler(order)}>
                                         <th>{order.token0Amount}</th>
                                         <th style={{ color: `${order.orderTypeClass}` }}>{order.tokenPrice}</th>
                                         <th>{order.token1Amount}</th>
