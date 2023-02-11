@@ -76,6 +76,9 @@ const DEFAULT_EXCHANGE_STATE = {
     events: []
 }
 
+// ------------------------------------------------------------------------------------------------
+// EXCHANGE REDUCER
+
 export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
     let index, data
 
@@ -155,6 +158,44 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                     isError: true
                 }
             }
+
+
+        // ----------------------------------------------------------------
+        // FILLING ORDERS
+
+        case 'ORDER_FILL_REQUEST':
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'Fill Order',
+                    isPending: true,
+                    isSuccesful: false
+                }
+            }
+        case 'ORDER_FILL_SUCCESS':
+            // Prevent duplicate orders
+            index = state.filledOrders.data.findIndex(order => order.id.toString() === action.order.id.toString())
+
+            if(index === -1) {
+                data = [...state.filledOrders.data, action.order]
+            } else {
+                data = state.filledOrders.data
+            }
+
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'Fill Order',
+                    isPending: false,
+                    isSuccesful: true
+                },
+                filledOrders: {
+                    ...state.filledOrders,
+                    data
+                },
+                events: [action.event, ...state.events]
+            }
+
 
 
         // ----------------------------------------------------------------
