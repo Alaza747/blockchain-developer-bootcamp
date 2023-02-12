@@ -134,7 +134,7 @@ const Balance = () => {
                 </div>
 
                 <form onSubmit={isDeposit ? (e) => depositHandler(e, tokens[1]) : (e) => withdrawHandler(e, tokens[1])}>
-                    <label htmlFor="token1">{symbols && symbols[1]} amount</label>
+                    <label htmlFor="token1">{symbols && symbols[1]} Amount</label>
                     <input
                         type="text"
                         id='token0'
