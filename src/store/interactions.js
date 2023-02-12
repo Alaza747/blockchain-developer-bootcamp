@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import TOKEN_ABI from '../abis/Token.json';
 import EXCHANGE_ABI from '../abis/Exchange.json';
-import { fill } from "lodash";
 
 export const loadProvider = (dispatch) => {
     const connection = new ethers.providers.Web3Provider(window.ethereum)
@@ -54,9 +53,9 @@ export const loadExchange = async (provider, address, dispatch) => {
 export const subsribeToEvents = (exchange, dispatch) => {
     exchange.on("Cancel", (id, user, tokenGet, amountGet, tokenGive, amountGive, timestamp, event) => {
         const order = event.args
-        dispatch({ type: 'ORDER_CANCEL_SUCCESS', order, event })   
-    }) 
-    
+        dispatch({ type: 'ORDER_CANCEL_SUCCESS', order, event })
+    })
+
     exchange.on("Trade", (id, user, tokenGet, amountGet, tokenGive, amountGive, creator, timestamp, event) => {
         const order = event.args
         dispatch({ type: 'ORDER_FILL_SUCCESS', order, event })
@@ -106,7 +105,7 @@ export const loadAllOrders = async (provider, exchange, dispatch) => {
 
     // FETCH CANCELLED ORDERS
     // Fetch all orders by querying the blockchain for events named 'Order' from blocknumber 0 up to the recent blocknumber
-    const cancelStream = await exchange.queryFilter('Cancel', 0 , block)
+    const cancelStream = await exchange.queryFilter('Cancel', 0, block)
 
     // Map all the args of each event to the event itself 
     const cancelledOrders = cancelStream.map(event => event.args)
@@ -128,13 +127,13 @@ export const loadAllOrders = async (provider, exchange, dispatch) => {
 
 export const transferTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
     let transaction
-    
-    dispatch({ type: 'TRANSFER_REQUEST'})
+
+    dispatch({ type: 'TRANSFER_REQUEST' })
 
     try {
         const signer = await provider.getSigner()
         const amountToTransfer = ethers.utils.parseUnits(amount.toString(), 18)
-    
+
         if (transferType === 'Deposit') {
             transaction = await token.connect(signer).approve(exchange.address, amountToTransfer)
             await transaction.wait()
@@ -158,10 +157,10 @@ export const makeBuyOrder = async (provider, exchange, tokens, order, dispatch) 
     const amountGet = ethers.utils.parseUnits(order.amount, 18)
     const tokenGive = tokens[1].address
     const amountGive = ethers.utils.parseUnits((order.amount * order.price).toString(), 18)
-    
+
     dispatch({ type: 'NEW_ORDER_REQUEST' })
 
-    try {    
+    try {
         const signer = await provider.getSigner()
         const transaction = await exchange.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
         await transaction.wait()
@@ -175,10 +174,10 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
     const amountGet = ethers.utils.parseEther((order.amount * order.price).toString(), 18)
     const tokenGive = tokens[0].address
     const amountGive = ethers.utils.parseEther(order.amount, 18)
-    
+
     dispatch({ type: 'NEW_ORDER_REQUEST' })
 
-    try {    
+    try {
         const signer = await provider.getSigner()
         const transaction = await exchange.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
         await transaction.wait()
@@ -193,10 +192,10 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
 // CANCEL ORDERS
 
 export const cancelOrder = async (provider, exchange, order, dispatch) => {
-    
+
     dispatch({ type: 'ORDER_CANCEL_REQUEST' })
 
-    try {    
+    try {
         const signer = await provider.getSigner()
         const transaction = await exchange.connect(signer).cancelOrder(order.id)
         await transaction.wait()

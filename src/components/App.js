@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch } from'react-redux';
+import { useDispatch } from 'react-redux';
 import config from '../config.json';
 import '../App.css';
 
@@ -32,7 +32,7 @@ function App() {
 
     // Fetch the networks ChainID (e.g. hh:31337)
     const chainId = await loadNetwork(provider, dispatch)
-    
+
     window.ethereum.on('chainChanged', () => {
       window.location.reload()
     })
@@ -45,8 +45,8 @@ function App() {
     // Load Token Smart Contract
     const Tony = config[chainId].Tony
     const mETH = config[chainId].mETH
-    await loadTokens(provider, [Tony.address, mETH.address], dispatch) 
-    
+    await loadTokens(provider, [Tony.address, mETH.address], dispatch)
+
     // Load exchange contract
     const exchange = await loadExchange(provider, config[chainId].exchange.address, dispatch)
 
@@ -56,7 +56,7 @@ function App() {
     // Listen to events from blockchain
     subsribeToEvents(exchange, dispatch)
   }
-    
+
   useEffect(() => {
     loadBlockchainData();
   })
